@@ -1,0 +1,54 @@
+public class Planeta {
+
+	//variables
+	
+	private int vidas;
+	private String nombre;
+	private int misilesRonda;
+	private int numEquipos;
+	// Constructor
+	public Planeta(){
+		this.vidas = 200;
+		this.misilesRonda = 50;
+	}
+	public Planeta(int vidaPers, int misilesPers) {
+		this.vidas = vidaPers;
+		this.misilesRonda = misilesPers;
+	}
+	// getter y setter
+	public int getVidas() {
+		return vidas;
+	}
+	public void setVidas(int vidas) {
+		this.vidas = vidas;
+	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public int getMisiles_ronda() {
+		return misilesRonda;
+	}
+	public void setMisiles_ronda(int misiles_ronda) {
+		this.misilesRonda = misiles_ronda;
+	}
+	public int getNumEquipos() {
+		return numEquipos;
+	}
+	public void setNumEquipos(int numEquipos) {
+		this.numEquipos = numEquipos;
+	}
+	/*
+	  * Comprueba cuantas vidas le quedan a los equipos y si esta descalificado
+	  * @param combate comprobar vidas
+	  * */
+	public void combate(int misiles, Planeta atacado){
+		atacado.vidas -= misiles;
+		if(atacado.vidas < 0){
+			atacado.vidas = 0;
+		}
+	}
+}
+
