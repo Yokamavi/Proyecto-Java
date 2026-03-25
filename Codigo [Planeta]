@@ -1,20 +1,30 @@
 public class Planeta {
+	/**
+	 * Método principal de la clase constructor, donde se definen los atributos, el
+	 * constructor, el setter y getter
+	 */
+
 
 	//variables
-	
 	private int vidas;
+	private int vidaMaxima;
 	private String nombre;
 	private int misilesRonda;
 	private int numEquipos;
+	
 	// Constructor
 	public Planeta(){
 		this.vidas = 200;
+		this.vidaMaxima = 200;
 		this.misilesRonda = 50;
 	}
+	
 	public Planeta(int vidaPers, int misilesPers) {
 		this.vidas = vidaPers;
+		this.vidaMaxima = vidaPers;
 		this.misilesRonda = misilesPers;
 	}
+	
 	// getter y setter
 	public int getVidas() {
 		return vidas;
@@ -40,8 +50,21 @@ public class Planeta {
 	public void setNumEquipos(int numEquipos) {
 		this.numEquipos = numEquipos;
 	}
-	/*
-	  * Comprueba cuantas vidas le quedan a los equipos y si esta descalificado
+	/**
+	 * Método curar: Se encarga de que al momento de que un equipo decida
+	 * curarse, este mimso no supere el límite de vida máxima
+	 * 
+	 * @param cantidad es la cantidad de misiles usados para defenderse
+	 */
+	public void curar(int cantidad) {
+		this.vidas += cantidad;
+		if (this.vidas > this.vidaMaxima) {
+			this.vidas = this.vidaMaxima;
+		}
+	}
+
+	/**
+	  * Método combate: Comprueba cuantas vidas le quedan a los equipos y si esta descalificado
 	  * @param combate comprobar vidas
 	  * */
 	public void combate(int misiles, Planeta atacado){
@@ -51,4 +74,3 @@ public class Planeta {
 		}
 	}
 }
-
