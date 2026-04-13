@@ -1,4 +1,16 @@
+import java.util.ArrayList;
 import java.util.Scanner;
+
+/**
+ * @author Aarón Martíns Vilas
+ * @author Víctor Mosquera Puchades
+ * @author Liliana Ortega Arteaga
+ * @author Óscar Rama Blanco
+ * @author Gabriela Salazar Franco
+ * @author Fabián Sanchez Rodriguez
+ * * @version 1.0
+ * @since 1.0
+ */
 
 public class Main {
 	static Scanner e = new Scanner(System.in);
@@ -6,15 +18,10 @@ public class Main {
 	// =========================================================================
 	// 1. MÉTODOS PRINCIPALES (MENÚS Y CONFIGURACIÓN)
 	// =========================================================================
-	/**
-	 * Método principal donde se muestra menú del juego y llama a {@link Main#jugar()}
-	 *
-	 * @param args array de String
-	 **/
 	public static void main(String[] args) {
 
 		int opciones = 0;
-		imprimirLogo();
+		MostrarInfo.mostrarLogo();
 
 		do {
 			opciones = mostrarMenu();
@@ -23,10 +30,10 @@ public class Main {
 				jugar();
 				break;
 			case 2:
-				reglasJuego();
+				MostrarInfo.mostrarReglas();
 				break;
 			case 3:
-				informacion();
+				MostrarInfo.mostrarInformacion();
 				break;
 			case 0:
 				salir();
@@ -35,13 +42,8 @@ public class Main {
 		} while (opciones != 0);
 	}
 
-	// =================================================J=================================================
-	/**
-	 * Método Jugar, primero se define si es partida personalizada o normal.
-	 */
 	public static void jugar() {
 
-		// IMPRIMIMOS EL MENÚ FUERA DEL BUCLE
 		System.out.println("\n\t\t=================================");
 		System.out.println("\t\t||          Partida            ||");
 		System.out.println("\t\t||                             ||");
@@ -62,210 +64,196 @@ public class Main {
 
 		if (opcion == 0)
 			return;
-		int numEquipos = 5;// Por si acaso en algun momento queremos hacerlo con más equipos
-		Planeta[] equipos = new Planeta[numEquipos];
+			
+		// --- NUEVO: Preguntamos cuántos equipos van a jugar ---
+		System.out.print("¿Cuántos equipos van a participar? (Mínimo 3): ");
+		int numEquipos;
+		do {
+			numEquipos = pedirNumero();
+			if (numEquipos < 3) {
+				System.out.print("❌ Tienen que ser al menos 3 equipos. Inténtalo de nuevo: ");
+			}
+		} while (numEquipos < 3);
+		// ------------------------------------------------------
+
+		ArrayList<Planeta> equipos = new ArrayList<>();
 		int misilesIniciales;
 
 		if (opcion == 1) {
+			int vidaPers;
+			
 			System.out.print("¿Cantidad de vida personalizada?: ");
-			int vidaPers = pedirNumero();
+			do {
+				vidaPers = pedirNumero();
+				if (vidaPers < 3) {
+					System.out.print("La vida ha de ser mayor a 2. Intentalo de nuevo: ");
+				}
+			} while (vidaPers < 3);
+			
 			System.out.print("¿Cantidad de misiles personalizada?: ");
-			misilesIniciales = pedirNumero();
-			for (int i = 0; i < 5; i++)
-				equipos[i] = new Planeta(vidaPers, misilesIniciales);
+			do {
+				misilesIniciales = pedirNumero();
+				if (misilesIniciales >= vidaPers || misilesIniciales <= 1) {
+					System.out.print("La cantidad de misiles iniciales no puede ser menor "
+							+ "o igual a 1 y tampoco igual o mayor a la cantidad de vida.\nIntentalo de nuevo: ");
+				}
+			} while (misilesIniciales >= vidaPers || misilesIniciales <= 1);
+			
+			// Cambiamos el 5 por numEquipos
+			for (int i = 0; i < numEquipos; i++)
+				equipos.add(new Planeta(vidaPers, misilesIniciales));
 		} else {
 			misilesIniciales = 50;
-			for (int i = 0; i < 5; i++)
-				equipos[i] = new Planeta();
+			// Cambiamos el 5 por numEquipos
+			for (int i = 0; i < numEquipos; i++)
+				equipos.add(new Planeta());
 		}
 
 		iniciarPartida(equipos, misilesIniciales);
 	}
 
-	// =========================================================================
-	// 2. MOTOR DEL JUEGO (LÓGICA PRINCIPAL LÍMPIA)
-	// =========================================================================
-	
-
 	// =================================================PARTIDA=================================================
-	/**
-	 * Método iniciar partida.
-	 * Define los nombres de los equipos, inicializa la partida, muestra información del estado 
-	 * de los equipos y gestiona los turnos hasta que haya un ganador.
-	 * @param equipos define los jugadores de la partida.
-	 * @param misilesIniciales recibe la cantidad de misiles iniciales por equipo.
-	 */
-	public static void iniciarPartida(Planeta[] equipos, int misilesIniciales) {
-
-		String[] eventos = new String[300];
-		int contadorEventos = 0;
+	public static void iniciarPartida(ArrayList<Planeta> equipos, int misilesIniciales) {	
+		String eventos = "";
 		int ronda = 1;
-
+		
 		System.out.println("\n--- Bienvenido a Coldwar ---");
 		System.out.println("Cargando equipos...");
-
-		// INGRESAMOS LOS NOMBRES ASEGURANDONOS DE QUE NO HAYA REPETIDOS
-		for (int i = 0; i < equipos.length; i++) {
+		
+		for (int i = 0; i < equipos.size(); i++) {
 			boolean nombreValido;
 			String nombre;
-			do { 
+			do {
 				nombreValido = true;
 				System.out.print("Inserta el nombre del equipo Nº" + (i + 1) + ": ");
 				nombre = e.nextLine().trim();
-
 				if (nombre.isEmpty()) {
 					System.out.println("❌ El nombre no puede estar vacío.");
 					nombreValido = false;
 					continue;
 				}
-
-				// COMPROBAMOS SI YA EXISTE UN EQUIPO CON ESE NOMBRE
 				for (int j = 0; j < i; j++) {
-					if (equipos[j].getNombre().equalsIgnoreCase(nombre)) {
+					if (equipos.get(j).getNombre().equalsIgnoreCase(nombre)) {
 						System.out.println("❌ Ese nombre ya está en uso. Por favor, elige otro.");
 						nombreValido = false;
 						break;
 					}
 				}
 			} while (!nombreValido);
-
-			equipos[i].setNombre(nombre);
+			equipos.get(i).setNombre(nombre);
 		}
-
+		
 		while (contarVivos(equipos) >= 2) {
 			System.out.println("\n==================================");
 			System.out.println("          RONDA " + ronda);
 			System.out.println("==================================");
-
 			imprimirEstadoEquipos(equipos);
-
-			// VARIABLES PARA RETRASAR EL DAÑO/CURACIÓN HASTA EL FINAL DE LA RONDA
-			int[] dañoRonda = new int[equipos.length];
-			int[] curacionRonda = new int[equipos.length];
-
+			
+			boolean[] empezoRondaVivo = new boolean[equipos.size()];
+			int[] vidaInicialRonda = new int[equipos.size()];
+			
+			for (int i = 0; i < equipos.size(); i++) {
+				empezoRondaVivo[i] = equipos.get(i).getVidas() > 0;
+				vidaInicialRonda[i] = equipos.get(i).getVidas();
+			}
+			
 			// TURNOS DE LOS EQUIPOS
-			for (int i = 0; i < equipos.length; i++) {
-				Planeta atacante = equipos[i];
-				if (atacante.getVidas() <= 0)
-					continue; 
-
+			for (int i = 0; i < equipos.size(); i++) {
+				Planeta atacante = equipos.get(i);
+				
+				if (!empezoRondaVivo[i])
+					continue;
+					
 				atacante.setMisiles_ronda(misilesIniciales);
-
-				while (atacante.getMisiles_ronda() > 0) {
+				
+				int misilesRestantes = misilesIniciales;
+				int misilesParaDefensa = 0;
+				int[] misilesParaAtaque = new int[equipos.size()];
+				
+				// FASE 1: PLANIFICACIÓN
+				while (misilesRestantes > 0) {
 					System.out.println("\n------------------------------------------");
-					System.out.println("Turno de: " + atacante.getNombre() + " (" + atacante.getVidas() + " HP)");
-					System.out.println("Misiles disponibles: " + atacante.getMisiles_ronda());
+					System.out.println("Turno de: " + atacante.getNombre() + " (" + vidaInicialRonda[i] + " HP)");
+					System.out.println("Misiles disponibles: " + misilesRestantes);
 					System.out.println("------------------------------------------");
-
-					Planeta[] objetivos = new Planeta[equipos.length];
-					int opcionesDisponibles = mostrarObjetivos(atacante, equipos, objetivos, ronda);
-
-					int opcion;
+					
+					Planeta[] objetivos = new Planeta[equipos.size()];
+					int opcionesDisponibles = mostrarObjetivos(atacante, equipos, objetivos, ronda, vidaInicialRonda);
+					int opcion = -1;
 					do {
 						System.out.print("¿Qué deseas hacer?: ");
 						opcion = pedirNumero();
-
 						if (opcion < 0 || opcion > opcionesDisponibles) {
 							System.out.println(
 									"❌ Opción no válida. Introduce un número entre 0 y " + opcionesDisponibles + ".");
 						} else if (opcion == 0 && ronda == 1) {
 							System.out.println("❌ ¡No puedes defenderte en la primera ronda! Es momento de atacar.");
-							opcion = -1; 
+							opcion = -1;
 						}
 					} while (opcion < 0 || opcion > opcionesDisponibles);
-
+					
 					if (opcion == 0) {
 						System.out.print("¿Cuántos misiles vas a usar para defenderte?: ");
-						int misilesDefensa = pedirMisilesValidos(atacante.getMisiles_ronda());
-
-						// ANOTAMOS LA CURACIÓN PERO NO SE LA DAMOS AÚN
-						curacionRonda[i] += misilesDefensa / 2;
-
-						eventos[contadorEventos] = procesarDefensa(atacante, misilesDefensa);
-						contadorEventos++;
+						int misilesDefensa = pedirMisilesValidos(misilesRestantes);
+						
+						misilesParaDefensa += misilesDefensa;
+						misilesRestantes -= misilesDefensa;
+						
 					} else {
 						System.out.print("¿Cuántos misiles vas a lanzar?: ");
-						int misilesLanzar = pedirMisilesValidos(atacante.getMisiles_ronda());
+						int misilesLanzar = pedirMisilesValidos(misilesRestantes);
 						Planeta objetivo = objetivos[opcion - 1];
-
-						// BUSCAMOS A QUIÉN ATACA PARA ANOTARLE EL DAÑO PERO NO QUITARLE LA VIDA AÚN
+						
 						int indiceObjetivo = -1;
-						for (int j = 0; j < equipos.length; j++) {
-							if (equipos[j] == objetivo)
+						for (int j = 0; j < equipos.size(); j++) {
+							if (equipos.get(j) == objetivo) {
 								indiceObjetivo = j;
+								break;
+							}
 						}
-						dañoRonda[indiceObjetivo] += misilesLanzar;
-
-						eventos[contadorEventos] = procesarAtaque(atacante, objetivo, misilesLanzar);
-						contadorEventos++;
+						
+						misilesParaAtaque[indiceObjetivo] += misilesLanzar;
+						misilesRestantes -= misilesLanzar;
 					}
 				}
-			}
-
-			// Aplicamos todo de golpe al final de la ronda para que no haya bugs raros con
-			// la vida
-			for (int i = 0; i < equipos.length; i++) {
-				Planeta p = equipos[i];
-
-				if (p.getVidas() > 0) {
-
-					// Calculamos el balance neto (cuánto se curó menos cuánto daño le hicieron)
-					int balance = curacionRonda[i] - dañoRonda[i];
-
-					if (balance > 0) {
-						p.curar(balance);
-					} else if (balance < 0) {
-						p.combate(balance * -1, p);
-
-						// Comprobamos si con este golpe lo han matado
-						if (p.getVidas() <= 0) {
-							eventos[contadorEventos] = "💥 ¡EL EQUIPO " + p.getNombre().toUpperCase()
-									+ " HA SIDO DESTRUIDO EN ESTA RONDA!";
-							contadorEventos++;
-						}
+				
+				// FASE 2: RESOLUCIÓN MATEMÁTICA
+				if (misilesParaDefensa > 0) {
+					eventos += atacante.curar(misilesParaDefensa);
+				}
+				
+				for (int j = 0; j < equipos.size(); j++) {
+					if (misilesParaAtaque[j] > 0) {
+						Planeta enemigo = equipos.get(j);
+						eventos += atacante.combate(misilesParaAtaque[j], enemigo);
 					}
 				}
+			} 
+			
+			// FASE FINAL: AVISO DE DESTRUCCIONES
+			eventos += "\n--- RESUMEN DE BAJAS DE LA RONDA ---\n";
+			boolean huboBajas = false;
+			for (int i = 0; i < equipos.size(); i++) {
+				if (empezoRondaVivo[i] && equipos.get(i).getVidas() <= 0) {
+					eventos += "☠️ ¡EL EQUIPO " + equipos.get(i).getNombre().toUpperCase() + " HA SIDO DESTRUIDO!\n";
+					huboBajas = true;
+				}
 			}
-			// ==========================================================
-
-			imprimirRegistro(eventos, contadorEventos, ronda);
-
-			eventos = new String[300];
-			contadorEventos = 0;
-
+			if (!huboBajas) eventos += "Nadie ha sido destruido en esta ronda.\n";
+			
+			imprimirRegistro(eventos, ronda);
+			eventos = "";
+			
 			if (contarVivos(equipos) <= 1) {
 				System.out.println("\n🏆 ¡LA GUERRA HA TERMINADO! El ganador es: " + obtenerGanador(equipos));
 				break;
 			}
-
 			ronda++;
 		}
 	}
 
-	// =========================================================================
-	// 3. MÉTODOS AUXILIARES ("ESCONDIDOS" / HERRAMIENTAS)
-	// =========================================================================
-	/**
-	 * Método que visualiza el logo del juego en consola.
-	 */
-	public static void imprimirLogo() {
-
-		System.out.println("░█████╗░░█████╗░██╗░░░░░██████╗░░██╗░░░░░░░██╗░█████╗░██████╗░");
-		System.out.println("██╔══██╗██╔══██╗██║░░░░░██╔══██╗░██║░░██╗░░██║██╔══██╗██╔══██╗");
-		System.out.println("██║░░╚═╝██║░░██║██║░░░░░██║░░██║░╚██╗████╗██╔╝███████║██████╔╝");
-		System.out.println("██║░░██╗██║░░██║██║░░░░░██║░░██║░░████╔═████║░██╔══██║██╔══██╗");
-		System.out.println("╚█████╔╝╚█████╔╝███████╗██████╔╝░░╚██╔╝░╚██╔╝░██║░░██║██║░░██║");
-		System.out.println("░╚════╝░░╚════╝░╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░░╚═╝░░╚═╝╚═╝░░╚═╝");
-	}
-
 	// =================================================MENU=================================================
-	/**
-	 * Método Mostrar Menú, se visualiza el menú con las opciones y se valida que la opción esté 
-	 * entre los parámetros indicados.
-	 * @return la opción seleccionada por el usuario.
-	 */
 	public static int mostrarMenu() {
-		// IMPRIMIMOS EL MENÚ FUERA DEL BUCLE
 		System.out.println("\n\t\t=================================");
 		System.out.println("\t\t||                             ||");
 		System.out.println("\t\t||          Menu               ||");
@@ -287,50 +275,10 @@ public class Main {
 		return opciones;
 	}
 
-	// =================================================REGLAS=================================================
-	/**
-	 * Método que muestra las reglas del juego.
-	 */
-	public static void reglasJuego() {
-		System.out.println("");
-	}
-
-	// =================================================INFORMACION=================================================
-	/**
-	 * Método que muestra la información sobre el juego como la versión, los autores 
-	 * e información de contacto.
-	 */
-	public static void informacion() {
-		System.out.println("VERSION: 1.0");
-		System.out.println("\nCONTACTOS: ");
-		System.out.println("amartinsv25@fpcoruna.afundacion.org");
-		System.out.println("vmosquerap25@fpcoruna.afundacion.org");
-		System.out.println("lortegaa25@fpcoruna.afundacion.org");
-		System.out.println("oramab25@fpcoruna.afundacion.org");
-		System.out.println("gsalazarf25@fpcoruna.afundacion.org");
-		System.out.println("fsanchezr25@fpcoruna.afundacion.org");
-		System.out.println("\nAUTORES: ");
-		System.out.println("Aarón Martíns Vilas");
-		System.out.println("Víctor Mosquera Puchades");
-		System.out.println("Liliana Ortega Arteaga");
-		System.out.println("Óscar Rama Blanco");
-		System.out.println("Gabriela Salazar Franco");
-		System.out.println("Fabián Sánchez Rodríguez");
-	}
-
-	// =================================================SALIR=================================================
-	/**
-	 * Método Salir que muestra el mensaje de despedida.
-	 */
 	public static void salir() {
 		System.out.println("Fin del juego");
 	}
 
-	// =================================================VALIDACION NUMERO=================================================
-	/**
-	 * Método pedir Número, valida el número ingresado para la opción del menú u otros inputs.
-	 * @return el número validado introducido por teclado.
-	 */
 	public static int pedirNumero() {
 		int cantidad = -1;
 		boolean esNumero = false;
@@ -350,12 +298,6 @@ public class Main {
 		return cantidad;
 	}
 
-	// =================================================VALIDACIÓN MISILES=================================================
-	/**
-	 * Método que pide la cantidad de misiles para atacar o defenderse.
-	 * @param maximoDisponible muestra la cantidad de misiles que le queda al equipo.
-	 * @return la cantidad validada de misiles elegidos por el usuario.
-	 */
 	public static int pedirMisilesValidos(int maximoDisponible) {
 		int cantidad;
 		do {
@@ -369,12 +311,7 @@ public class Main {
 		return cantidad;
 	}
 
-	// =================================================ESTADOS EQUIPOS=================================================
-	/**
-	 * Método que visualiza los estados de los equipos por consola.
-	 * @param equipos array con los equipos para revisar su vida.
-	 */
-	public static void imprimirEstadoEquipos(Planeta[] equipos) {
+	public static void imprimirEstadoEquipos(ArrayList<Planeta> equipos) {
 		for (Planeta p : equipos) {
 			if (p.getVidas() > 0) {
 				System.out.println("[+] " + p.getNombre() + " ---> " + p.getVidas() + " HP");
@@ -384,21 +321,13 @@ public class Main {
 		}
 	}
 
-	// =================================================MOSTRAR OBJETIVOS Y BLOQUEAR DEFENSA EN RONDA 1=================================================
-	/**
-	 * Método mostrar objetivos y bloquear que en la primera ronda los equipos no puedan defenderse.
-	 * @param atacante el equipo que le toca jugar
-	 * @param equipos las opciones de todos los equipos del juego
-	 * @param objetivos array donde se guardan las opciones válidas a las que se puede atacar
-	 * @param ronda define si puedes atacar y defenderte o solo atacar dependiendo de la ronda actual.
-	 * @return la cantidad de objetivos disponibles mostrados.
-	 */
-	public static int mostrarObjetivos(Planeta atacante, Planeta[] equipos, Planeta[] objetivos, int ronda) {
+	public static int mostrarObjetivos(Planeta atacante, ArrayList<Planeta> equipos, Planeta[] objetivos, int ronda, int[] vidaInicialRonda) {
 		int pos = 0;
-		for (Planeta p : equipos) {
-			if (p != atacante && p.getVidas() > 0) {
+		for (int i = 0; i < equipos.size(); i++) {
+			Planeta p = equipos.get(i);
+			if (p != atacante && vidaInicialRonda[i] > 0) {
 				objetivos[pos] = p;
-				System.out.println((pos + 1) + ". Atacar a " + p.getNombre() + " (" + p.getVidas() + " HP)");
+				System.out.println((pos + 1) + ". Atacar a " + p.getNombre() + " (" + vidaInicialRonda[i] + " HP)");
 				pos++;
 			}
 		}
@@ -412,66 +341,15 @@ public class Main {
 		return pos;
 	}
 
-	// =================================================DEFENSA=================================================
-	/**
-	 * Método defensa que calcula el valor de defensa, ya que los puntos utilizados valen la mitad.
-	 * @param atacante el equipo que está jugando y decide defenderse.
-	 * @param misilesDefensa la cantidad de misiles que gasta para defenderse.
-	 * @return cadena de texto con el registro del movimiento realizado.
-	 */
-	public static String procesarDefensa(Planeta atacante, int misilesDefensa) {
-		int curacion = misilesDefensa / 2;
-		// YA NO MODIFICAMOS LA VIDA AQUÍ, SE HACE AL FINAL DE LA RONDA
-		atacante.setMisiles_ronda(atacante.getMisiles_ronda() - misilesDefensa);
-
-		return "🛡️ [" + atacante.getNombre() + "] gastó " + misilesDefensa + " misiles en defensa (+ " + curacion
-				+ " HP al final).";
-	}
-
-	// =================================================ATAQUE=================================================
-	/**
-	 * Método procesar ataque que devuelve la acción del ataque al equipo seleccionado.
-	 * @param atacante equipo que realiza el ataque.
-	 * @param objetivo equipo que recibe el ataque.
-	 * @param misilesLanzar cantidad de misiles gastados en este ataque.
-	 * @return cadena de texto con el registro del movimiento realizado.
-	 */
-	public static String procesarAtaque(Planeta atacante, Planeta objetivo, int misilesLanzar) {
-		// YA NO MODIFICAMOS LA VIDA DEL OBJETIVO AQUÍ, SE HACE AL FINAL DE LA RONDA
-		atacante.setMisiles_ronda(atacante.getMisiles_ronda() - misilesLanzar);
-
-		return "🚀 [" + atacante.getNombre() + "] atacó a [" + objetivo.getNombre() + "] con " + misilesLanzar
-				+ " misiles (- " + misilesLanzar + " HP al final).";
-	}
-
-	// =================================================REGISTRO DESPUES DE CADA RONDA=================================================
-	/**
-	 * Método imprimir registro que muestra las acciones sucedidas tras terminar el turno de todos.
-	 * @param eventos array con los textos generados en cada acción de la ronda.
-	 * @param contadorEventos cantidad de eventos que han ocurrido.
-	 * @param ronda número de la ronda actual.
-	 */
-	public static void imprimirRegistro(String[] eventos, int contadorEventos, int ronda) {
+	public static void imprimirRegistro(String eventos, int ronda) {
 		System.out.println("\n==================================");
 		System.out.println("   REGISTRO DE LA RONDA " + ronda);
 		System.out.println("==================================");
-		if (contadorEventos == 0) {
-			System.out.println("No hubo acciones destacables.");
-		} else {
-			for (int i = 0; i < contadorEventos; i++) {
-				System.out.println(eventos[i]);
-			}
-		}
+		System.out.print(eventos); 
 		System.out.println("==================================\n");
 	}
 
-	// =================================================CONTAR EQUIPOS VIVOS=================================================
-	/**
-	 * Método contar vivos, que calcula cuántos equipos quedan en la partida.
-	 * @param equipos array con los equipos para comprobar su estado de vida.
-	 * @return número entero con la cantidad de equipos vivos.
-	 */
-	public static int contarVivos(Planeta[] equipos) {
+	public static int contarVivos(ArrayList<Planeta> equipos) {
 		int vivos = 0;
 		for (Planeta p : equipos) {
 			if (p.getVidas() > 0)
@@ -480,13 +358,7 @@ public class Main {
 		return vivos;
 	}
 
-	// =================================================OBTENER GANADOR=================================================
-	/**
-	 * Método obtener ganador, que revisa el array y valida qué equipo ha quedado en pie.
-	 * @param equipos array con los equipos de la partida.
-	 * @return el nombre del equipo ganador o "Nadie" si no queda ninguno.
-	 */
-	public static String obtenerGanador(Planeta[] equipos) {
+	public static String obtenerGanador(ArrayList<Planeta> equipos) {
 		for (Planeta p : equipos) {
 			if (p.getVidas() > 0)
 				return p.getNombre();
