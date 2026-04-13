@@ -1,3 +1,15 @@
+/**
+ * @author Aarón Martíns Vilas
+ * @author Víctor Mosquera Puchades
+ * @author Liliana Ortega Arteaga
+ * @author Óscar Rama Blanco
+ * @author Gabriela Salazar Franco
+ * @author Fabián Sanchez Rodriguez
+ * 
+ * @version 1.0
+ * @since 1.0
+ * 
+ */
 public class Planeta {
 	/**
 	 * Método principal de la clase constructor, donde se definen los atributos, el
@@ -12,7 +24,7 @@ public class Planeta {
 	private int misilesRonda;
 	private int numEquipos;
 	
-	// Constructor
+	// Constructores
 	public Planeta(){
 		this.vidas = 200;
 		this.vidaMaxima = 200;
@@ -56,21 +68,29 @@ public class Planeta {
 	 * 
 	 * @param cantidad es la cantidad de misiles usados para defenderse
 	 */
-	public void curar(int cantidad) {
-		this.vidas += cantidad;
+	public String curar(int cantidad) {
+		String atacante = this.nombre;
+		int curacion = cantidad / 2;
+		this.vidas += curacion;
 		if (this.vidas > this.vidaMaxima) {
 			this.vidas = this.vidaMaxima;
 		}
+		this.misilesRonda -= cantidad;
+		return "🛡️ [" + atacante + "] gastó " + cantidad + " misiles en defensa (+ " + curacion
+				+ " HP al final).\n";
 	}
 
 	/**
 	  * Método combate: Comprueba cuantas vidas le quedan a los equipos y si esta descalificado
 	  * @param combate comprobar vidas
 	  * */
-	public void combate(int misiles, Planeta atacado){
+	public String combate(int misiles, Planeta atacado){
 		atacado.vidas -= misiles;
 		if(atacado.vidas < 0){
 			atacado.vidas = 0;
 		}
+		misilesRonda -= misiles;
+		return "🚀 [" + nombre+ "] atacó a [" + atacado.getNombre() + "] con " + misiles
+				+ " misiles (- " + misiles + " HP al final).\n";
 	}
 }
