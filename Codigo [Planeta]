@@ -1,96 +1,184 @@
 /**
- * @author Aarón Martíns Vilas
+ * Clase que representa un planeta (o equipo) dentro del juego Coldwar. Gestiona
+ * los atributos vitales, el tipo de planeta y la lógica interna de combate,
+ * incluyendo curaciones, cálculo de daño por ventajas de tipo y probabilidades
+ * de evasión. * @author Aarón Martíns Vilas
+ * 
  * @author Víctor Mosquera Puchades
  * @author Liliana Ortega Arteaga
  * @author Óscar Rama Blanco
  * @author Gabriela Salazar Franco
  * @author Fabián Sanchez Rodriguez
- * 
  * @version 1.0
  * @since 1.0
- * 
  */
 public class Planeta {
-	/**
-	 * Método principal de la clase constructor, donde se definen los atributos, el
-	 * constructor, el setter y getter
-	 */
-
-
-	//variables
+	// Variables
 	private int vidas;
 	private int vidaMaxima;
 	private String nombre;
 	private int misilesRonda;
 	private int numEquipos;
-	
-	// Constructores
-	public Planeta(){
-		this.vidas = 200;
+	private int tipo;
+
+	public Planeta(int tipo) {
+		this.tipo = tipo;
+		// Valores por defecto para la partida normal
 		this.vidaMaxima = 200;
+		this.vidas = 200;
 		this.misilesRonda = 50;
+
+		// Si le pasamos el tipo 5, el planeta se automodifica para ser Gigante
+		if (this.tipo == 5) {
+			this.vidaMaxima = 400;
+			this.vidas = 400;
+			this.misilesRonda = 10;
+			// Lo mismo si es Enano (tipo 6)
+		} else if (this.tipo == 6) {
+			this.vidaMaxima = 100;
+			this.vidas = 100;
+		}
 	}
-	
+
 	public Planeta(int vidaPers, int misilesPers) {
-		this.vidas = vidaPers;
+		this.tipo = 1; // Forzamos el tipo 1 (Normal) para que en partidas personalizadas nadie tenga
+						// ventajas
 		this.vidaMaxima = vidaPers;
+		this.vidas = vidaPers;
 		this.misilesRonda = misilesPers;
 	}
-	
-	// getter y setter
+
+	// Getters y Setters
 	public int getVidas() {
 		return vidas;
 	}
+
 	public void setVidas(int vidas) {
 		this.vidas = vidas;
 	}
+
 	public String getNombre() {
 		return nombre;
 	}
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
 	public int getMisiles_ronda() {
 		return misilesRonda;
 	}
+
 	public void setMisiles_ronda(int misiles_ronda) {
 		this.misilesRonda = misiles_ronda;
 	}
+
 	public int getNumEquipos() {
 		return numEquipos;
 	}
+
 	public void setNumEquipos(int numEquipos) {
 		this.numEquipos = numEquipos;
 	}
-	/**
-	 * Método curar: Se encarga de que al momento de que un equipo decida
-	 * curarse, este mimso no supere el límite de vida máxima
-	 * 
-	 * @param cantidad es la cantidad de misiles usados para defenderse
-	 */
+
+	public int getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(int tipo) {
+		this.tipo = tipo;
+	}
+
+	public int calcularMisilesTurno(int baseMisiles, int ronda) {
+		// El Gigante empieza con 10 y suma 10 más en cada ronda. El resto de planetas
+		// se quedan con la base de siempre.
+		if (this.tipo == 5) {
+			return 10 + (10 * (ronda - 1));
+		}
+		return baseMisiles;
+	}
+
 	public String curar(int cantidad) {
 		String atacante = this.nombre;
 		int curacion = cantidad / 2;
 		this.vidas += curacion;
+		// Evitamos que la vida actual supere el límite de vida máxima del planeta
 		if (this.vidas > this.vidaMaxima) {
 			this.vidas = this.vidaMaxima;
 		}
+
+		// El planeta se resta a sí mismo los misiles gastados para que el Main lo sepa
 		this.misilesRonda -= cantidad;
-		return "🛡️ [" + atacante + "] gastó " + cantidad + " misiles en defensa (+ " + curacion
-				+ " HP al final).\n";
+
+		return "🛡️ [" + atacante + "] gastó " + cantidad + " misiles en defensa (+ " + curacion + " HP al final).\n";
 	}
 
-	/**
-	  * Método combate: Comprueba cuantas vidas le quedan a los equipos y si esta descalificado
-	  * @param combate comprobar vidas
-	  * */
-	public String combate(int misiles, Planeta atacado){
-		atacado.vidas -= misiles;
-		if(atacado.vidas < 0){
-			atacado.vidas = 0;
+	public String combate(int misilesLanzados, Planeta atacado) {
+		int misilesImpactados = 0;
+		int misilesEsquivados = 0;
+
+		// 1. Simulación de esquiva (Tiramos una moneda al aire por cada misil
+		// disparado)
+		if (atacado.getTipo() == 6) {
+			for (int i = 0; i < misilesLanzados; i++) {
+				if (Math.random() >= 0.5) {
+					misilesImpactados++; // Cara = el misil da en el blanco
+				} else {
+					misilesEsquivados++; // Cruz = misil al agua
+				}
+			}
+		} else {
+			// Si el rival no es enano, se come todos los misiles de lleno
+			misilesImpactados = misilesLanzados;
 		}
-		misilesRonda -= misiles;
-		return "🚀 [" + nombre+ "] atacó a [" + atacado.getNombre() + "] con " + misiles
-				+ " misiles (- " + misiles + " HP al final).\n";
+
+		// 2. Cálculo de ventajas y desventajas según el tipo (Piedra, Papel, Tijera)
+		double multiplicador = 1.0;
+		if (this.tipo == 2) { // Rojo
+			if (atacado.getTipo() == 4)
+				multiplicador = 2.0;
+			if (atacado.getTipo() == 3)
+				multiplicador = 0.5;
+		} else if (this.tipo == 3) { // Azul
+			if (atacado.getTipo() == 2)
+				multiplicador = 2.0;
+			if (atacado.getTipo() == 4)
+				multiplicador = 0.5;
+		} else if (this.tipo == 4) { // Verde
+			if (atacado.getTipo() == 3)
+				multiplicador = 2.0;
+			if (atacado.getTipo() == 2)
+				multiplicador = 0.5;
+		}
+
+		// 3. Aplicar el daño real
+		// OJO: Hay que hacer un (int) porque al multiplicar por decimales (ej. 0.5), el
+		// resultado se vuelve decimal.
+		// Como la vida es un número entero, forzamos el int para cortarle los decimales
+		// y que nos deje restarlo.
+		int danioFinal = (int) (misilesImpactados * multiplicador);
+		atacado.vidas -= danioFinal;
+		if (atacado.vidas < 0)
+			atacado.vidas = 0; // Para que no haya vidas negativas
+
+		// El atacante se resta a sí mismo la munición que acaba de gastar
+		this.misilesRonda -= misilesLanzados;
+
+		// 4. Escribimos la frase de lo que ha pasado para mandársela al Main
+		String evento = "🚀 [" + nombre + "] lanzó " + misilesLanzados + " misiles a [" + atacado.getNombre() + "]. ";
+
+		if (atacado.getTipo() == 6) {
+			evento += "💨 El Enano esquivó " + misilesEsquivados + " misiles. ";
+		}
+
+		if (multiplicador == 2.0) {
+			evento += "¡SÚPER EFICAZ! (x2) ";
+		} else if (multiplicador == 0.5) {
+			evento += "Poco eficaz... (/2) ";
+		}
+
+		evento += "(- " + danioFinal + " HP).\n";
+
+		return evento;
 	}
 }
