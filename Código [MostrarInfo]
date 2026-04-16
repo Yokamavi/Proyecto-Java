@@ -57,4 +57,30 @@ public class MostrarInfo {
         System.out.println("Gabriela Salazar Franco");
         System.out.println("Fabián Sánchez Rodríguez");
     }
+    /**
+     * Método que muestra la información del menú
+     */
+    public static void mostrarMenu() {
+		System.out.println("\n\t\t=================================");
+		System.out.println("\t\t||           Menu              ||");
+		System.out.println("\t\t||        1-Jugar              ||");
+		System.out.println("\t\t||        2-Reglas del juego   ||");
+		System.out.println("\t\t||        3-Informacion        ||");
+		System.out.println("\t\t||        4-Mostrar Ganadores  ||"); 
+		System.out.println("\t\t||        0-Salir              ||");
+		System.out.println("\t\t=================================");
+    }
+    /**
+     * Método que fuestra el tipo de planetas
+     */
+    public static void mostrarTipoPlaneta() {
+    	System.out.println("Selecciona el tipo de planeta:");
+		System.out.println("1. Normal (Sin modificaciones)");
+		System.out.println("2. Planeta Rojo (x2 a verde, /2 a azul)");
+		System.out.println("3. Planeta Azul (x2 a rojo, /2 a verde)");
+		System.out.println("4. Planeta Verde (x2 a azul, /2 a rojo)");
+		System.out.println("5. Planeta Gigante (Doble vida, empieza con 10 misiles y escala)");
+		System.out.println("6. Planeta Enano (Mitad vida, 50% de esquivar misiles)");
+
+    }
 }
