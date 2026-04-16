@@ -2,8 +2,8 @@
  * Clase que representa un planeta (o equipo) dentro del juego Coldwar. Gestiona
  * los atributos vitales, el tipo de planeta y la lógica interna de combate,
  * incluyendo curaciones, cálculo de daño por ventajas de tipo y probabilidades
- * de evasión. * @author Aarón Martíns Vilas
- * 
+ * de evasión. 
+ * @author Aarón Martíns Vilas
  * @author Víctor Mosquera Puchades
  * @author Liliana Ortega Arteaga
  * @author Óscar Rama Blanco
@@ -21,151 +21,188 @@ public class Planeta {
 	private int numEquipos;
 	private int tipo;
 
+	/**
+	 * Constructor principal para inicializar un planeta basándose en su tipo.
+	 * Configura la vida máxima y los misiles por ronda dependiendo de si es un
+	 * planeta estándar, de tipo tanque (5) o evasivo/enano (6).
+	 * @param tipo El identificador numérico del tipo de planeta (ej: 5 para Tanque, 6 para Enano).
+	 */
 	public Planeta(int tipo) {
 		this.tipo = tipo;
-		// Valores por defecto para la partida normal
 		this.vidaMaxima = 200;
 		this.vidas = 200;
 		this.misilesRonda = 50;
 
-		// Si le pasamos el tipo 5, el planeta se automodifica para ser Gigante
 		if (this.tipo == 5) {
 			this.vidaMaxima = 400;
 			this.vidas = 400;
 			this.misilesRonda = 10;
-			// Lo mismo si es Enano (tipo 6)
 		} else if (this.tipo == 6) {
 			this.vidaMaxima = 100;
 			this.vidas = 100;
 		}
 	}
 
+	/**
+	 * Constructor secundario para inicializar un planeta con valores personalizados
+	 * de vida y misiles. Asigna por defecto el tipo 1 (estándar).
+	 * @param vidaPers    La cantidad de vida inicial y máxima personalizada.
+	 * @param misilesPers La cantidad de misiles disponibles por ronda personalizada.
+	 */
 	public Planeta(int vidaPers, int misilesPers) {
-		this.tipo = 1; // Forzamos el tipo 1 (Normal) para que en partidas personalizadas nadie tenga
-						// ventajas
+		this.tipo = 1; 
 		this.vidaMaxima = vidaPers;
 		this.vidas = vidaPers;
 		this.misilesRonda = misilesPers;
 	}
 
 	// Getters y Setters
-	public int getVidas() {
-		return vidas;
-	}
 
-	public void setVidas(int vidas) {
-		this.vidas = vidas;
-	}
+	/**
+	 * Obtiene la vida actual del planeta.
+	 * @return Los puntos de vida actuales.
+	 */
+	public int getVidas() { return vidas; }
 
-	public String getNombre() {
-		return nombre;
-	}
+	/**
+	 * Establece la vida actual del planeta.
+	 * @param vidas La nueva cantidad de puntos de vida.
+	 */
+	public void setVidas(int vidas) { this.vidas = vidas; }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+	/**
+	 * Obtiene el nombre del planeta o equipo.
+	 * @return El nombre actual del planeta.
+	 */
+	public String getNombre() { return nombre; }
 
-	public int getMisiles_ronda() {
-		return misilesRonda;
-	}
+	/**
+	 * Establece el nombre del planeta o equipo.
+	 * @param nombre El nombre a asignar al planeta.
+	 */
+	public void setNombre(String nombre) { this.nombre = nombre; }
 
-	public void setMisiles_ronda(int misiles_ronda) {
-		this.misilesRonda = misiles_ronda;
-	}
+	/**
+	 * Obtiene la cantidad de misiles disponibles para la ronda actual.
+	 * @return El número de misiles disponibles.
+	 */
+	public int getMisiles_ronda() { return misilesRonda; }
 
-	public int getNumEquipos() {
-		return numEquipos;
-	}
+	/**
+	 * Establece la cantidad de misiles disponibles para la ronda.
+	 * @param misiles_ronda La cantidad de misiles a establecer.
+	 */
+	public void setMisiles_ronda(int misiles_ronda) { this.misilesRonda = misiles_ronda; }
 
-	public void setNumEquipos(int numEquipos) {
-		this.numEquipos = numEquipos;
-	}
+	/**
+	 * Obtiene el número de equipos (si aplica a la lógica externa).
+	 * @return El número de equipos.
+	 */
+	public int getNumEquipos() { return numEquipos; }
 
-	public int getTipo() {
-		return tipo;
-	}
+	/**
+	 * Establece el número de equipos.
+	 * @param numEquipos El número de equipos a establecer.
+	 */
+	public void setNumEquipos(int numEquipos) { this.numEquipos = numEquipos; }
 
-	public void setTipo(int tipo) {
-		this.tipo = tipo;
-	}
+	/**
+	 * Obtiene el tipo numérico del planeta.
+	 * @return El identificador del tipo de planeta.
+	 */
+	public int getTipo() { return tipo; }
 
+	/**
+	 * Establece el tipo numérico del planeta.
+	 * @param tipo El nuevo identificador de tipo.
+	 */
+	public void setTipo(int tipo) { this.tipo = tipo; }
+
+	/**
+	 * Calcula la cantidad de misiles que el planeta recibe en un turno específico.
+	 * Implementa una lógica especial para el tipo 5, donde la cantidad de misiles
+	 * escala progresivamente con el número de ronda.
+	 * @param baseMisiles La cantidad base de misiles que se otorgan normalmente.
+	 * @param ronda       El número de la ronda actual.
+	 * @return La cantidad de misiles calculada para este turno.
+	 */
 	public int calcularMisilesTurno(int baseMisiles, int ronda) {
-		// El Gigante empieza con 10 y suma 10 más en cada ronda. El resto de planetas
-		// se quedan con la base de siempre.
 		if (this.tipo == 5) {
 			return 10 + (10 * (ronda - 1));
 		}
 		return baseMisiles;
 	}
 
+	/**
+	 * Ejecuta la acción de curación (o defensa) del planeta.
+	 * Consume una cantidad de misiles y regenera vida equivalente a la mitad
+	 * de los misiles gastados. Evita superar la vida máxima permitida.
+	 * @param cantidad La cantidad de misiles que se desean gastar en defensa/curación.
+	 * @return Una cadena de texto (log) describiendo la acción realizada y la vida recuperada.
+	 */
 	public String curar(int cantidad) {
-		String atacante = this.nombre;
+		String atacante = this.nombre.replace('.', ' ');
 		int curacion = cantidad / 2;
+		
+		// Sumamos la curación
 		this.vidas += curacion;
+		
 		// Evitamos que la vida actual supere el límite de vida máxima del planeta
 		if (this.vidas > this.vidaMaxima) {
 			this.vidas = this.vidaMaxima;
 		}
 
-		// El planeta se resta a sí mismo los misiles gastados para que el Main lo sepa
+		// El planeta se resta a sí mismo los misiles gastados
 		this.misilesRonda -= cantidad;
 
 		return "🛡️ [" + atacante + "] gastó " + cantidad + " misiles en defensa (+ " + curacion + " HP al final).\n";
 	}
 
+	/**
+	 * Ejecuta un ataque hacia otro planeta. Calcula la cantidad de misiles que impactan,
+	 * aplicando probabilidades de esquiva si el objetivo es tipo 6. Luego calcula el
+	 * daño final basándose en el sistema de debilidades y resistencias (Piedra, Papel, Tijera).
+	 * Finalmente, resta el daño al planeta objetivo y descuenta los misiles al atacante.
+	 * @param misilesLanzados La cantidad de misiles que el atacante dispara.
+	 * @param atacado         El objeto {@link Planeta} que recibe el ataque.
+	 * @return Una cadena de texto (log) detallando el resultado del combate, los impactos, esquivas y eficacia.
+	 */
 	public String combate(int misilesLanzados, Planeta atacado) {
 		int misilesImpactados = 0;
 		int misilesEsquivados = 0;
 
-		// 1. Simulación de esquiva (Tiramos una moneda al aire por cada misil
-		// disparado)
+		// Simulación de esquiva
 		if (atacado.getTipo() == 6) {
 			for (int i = 0; i < misilesLanzados; i++) {
 				if (Math.random() >= 0.5) {
-					misilesImpactados++; // Cara = el misil da en el blanco
+					misilesImpactados++; 
 				} else {
-					misilesEsquivados++; // Cruz = misil al agua
+					misilesEsquivados++; 
 				}
 			}
 		} else {
-			// Si el rival no es enano, se come todos los misiles de lleno
 			misilesImpactados = misilesLanzados;
 		}
 
-		// 2. Cálculo de ventajas y desventajas según el tipo (Piedra, Papel, Tijera)
+		// Cálculo de ventajas y desventajas
 		double multiplicador = 1.0;
 		if (this.tipo == 2) { // Rojo
-			if (atacado.getTipo() == 4)
-				multiplicador = 2.0;
-			if (atacado.getTipo() == 3)
-				multiplicador = 0.5;
+			if (atacado.getTipo() == 4) multiplicador = 2.0;
+			if (atacado.getTipo() == 3) multiplicador = 0.5;
 		} else if (this.tipo == 3) { // Azul
-			if (atacado.getTipo() == 2)
-				multiplicador = 2.0;
-			if (atacado.getTipo() == 4)
-				multiplicador = 0.5;
+			if (atacado.getTipo() == 2) multiplicador = 2.0;
+			if (atacado.getTipo() == 4) multiplicador = 0.5;
 		} else if (this.tipo == 4) { // Verde
-			if (atacado.getTipo() == 3)
-				multiplicador = 2.0;
-			if (atacado.getTipo() == 2)
-				multiplicador = 0.5;
+			if (atacado.getTipo() == 3) multiplicador = 2.0;
+			if (atacado.getTipo() == 2) multiplicador = 0.5;
 		}
-
-		// 3. Aplicar el daño real
-		// OJO: Hay que hacer un (int) porque al multiplicar por decimales (ej. 0.5), el
-		// resultado se vuelve decimal.
-		// Como la vida es un número entero, forzamos el int para cortarle los decimales
-		// y que nos deje restarlo.
+		
+		//Aplicamos el daño
 		int danioFinal = (int) (misilesImpactados * multiplicador);
 		atacado.vidas -= danioFinal;
-		if (atacado.vidas < 0)
-			atacado.vidas = 0; // Para que no haya vidas negativas
-
-		// El atacante se resta a sí mismo la munición que acaba de gastar
 		this.misilesRonda -= misilesLanzados;
 
-		// 4. Escribimos la frase de lo que ha pasado para mandársela al Main
-		String evento = "🚀 [" + nombre + "] lanzó " + misilesLanzados + " misiles a [" + atacado.getNombre() + "]. ";
+		String evento = "🚀 [" + nombre.replace('.', ' ') + "] lanzó " + misilesLanzados + " misiles a [" + atacado.getNombre().replace('.', ' ') + "]. ";
 
 		if (atacado.getTipo() == 6) {
 			evento += "💨 El Enano esquivó " + misilesEsquivados + " misiles. ";
