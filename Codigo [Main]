@@ -6,10 +6,9 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 /**
- * Clase principal que gestiona el flujo del juego Coldwar. Contiene el bucle de
- * la aplicación, los menús interactivos, la configuración inicial de los
- * equipos y la gestión de las rondas de combate, así como el historial de victorias.
- * @author Aarón Martíns Vilas
+ * Clase principal donde arranca el juego Coldwar. Aquí está el menú, 
+ * la preparación de la partida, los turnos y la lista de ganadores.
+ * * @author Aarón Martíns Vilas
  * @author Víctor Mosquera Puchades
  * @author Liliana Ortega Arteaga
  * @author Óscar Rama Blanco
@@ -22,9 +21,9 @@ public class Main {
 	static Scanner e = new Scanner(System.in);
 
 	/**
-	 * Método de entrada de la aplicación. Muestra el logo inicial y mantiene al usuario en
-	 * el menú principal gestionando la navegación hasta que decida cerrar el programa.
-	 * @param args Argumentos de la línea de comandos (no se utilizan).
+	 * Punto de partida del programa. Enseña el logo y te deja en el menú principal 
+	 * dando vueltas hasta que decidas salir poniendo un 0.
+	 * * @param args Argumentos de la línea de comandos (no los usamos).
 	 */
 	public static void main(String[] args) {
 		int opciones = 0;
@@ -55,9 +54,8 @@ public class Main {
 	}
 
 	/**
-	 * Inicia el proceso de configuración de la partida. Despliega el submenú de modos
-	 * de juego, recopila el número de participantes y la configuración de recursos
-	 * antes de arrancar el motor de la partida.
+	 * Prepara todo antes de empezar a jugar. Te pregunta el modo de juego, 
+	 * cuántos equipos van a participar y cómo quieres configurar las vidas y los misiles.
 	 */
 	public static void jugar() {
 		System.out.println("\n\t\t=================================");
@@ -117,14 +115,13 @@ public class Main {
 	}
 
 	/**
-	 * Configura los perfiles de los equipos y ejecuta el bucle principal del juego.
-	 * Controla la secuenciación de turnos, la fase de ataques y curaciones, la
-	 * notificación de bajas y la comprobación de victoria al final de cada ronda.
-	 * @param equipos          Estructura de datos vacía donde se registrarán los participantes.
-	 * @param misilesIniciales Cantidad de munición asignada base para los turnos.
-	 * @param numEquipos       Cantidad total de jugadores que conformarán la partida.
-	 * @param tipoPartida      Identificador del modo de juego (Personalizado, Normal o Bots).
-	 * @param vidaPers         Límite de salud configurado en caso de partida personalizada o bots.
+	 * Crea los equipos y controla los turnos de la partida. Se encarga de que 
+	 * los jugadores ataquen, se curen, mueran y de ver quién gana al final.
+	 * * @param equipos          Lista donde vamos a guardar los planetas que juegan.
+	 * @param misilesIniciales Los misiles con los que empieza cada equipo.
+	 * @param numEquipos       Cuántos jugadores hay en total.
+	 * @param tipoPartida      El modo de juego que se ha elegido (1, 2 o 3).
+	 * @param vidaPers         La vida inicial si se eligió un modo personalizado o con bots.
 	 */
 	public static void iniciarPartida(ArrayList<Planeta> equipos, int misilesIniciales, int numEquipos, int tipoPartida, int vidaPers) {
 		String eventos = "";
@@ -292,8 +289,8 @@ public class Main {
 	}
 
 	/**
-	 * Imprime por pantalla la interfaz gráfica del menú principal del juego.
-	 * @return Un entero con la opción válida seleccionada por el usuario (0-4).
+	 * Muestra el menú principal en pantalla y te pide que elijas una opción.
+	 * * @return El número de la opción que ha elegido el usuario (del 0 al 4).
 	 */
 	public static int mostrarMenu() {
 		System.out.println("\n\t\t=================================");
@@ -313,16 +310,16 @@ public class Main {
 	}
 
 	/**
-	 * Muestra un mensaje de despedida estándar al solicitar finalizar la ejecución del programa.
+	 * Simplemente muestra un mensaje para despedirse cuando cierras el juego.
 	 */
 	public static void salir() {
 		System.out.println("Fin del juego");
 	}
 
 	/**
-	 * Captura y procesa la entrada del usuario de forma robusta, asegurando que la 
-	 * conversión a número entero sea exitosa y previendo excepciones de formato.
-	 * @return El número entero extraído y validado de la entrada del usuario.
+	 * Pide un número por teclado y se asegura de que no metas letras por error, 
+	 * así evitamos que el programa se rompa (salte una excepción).
+	 * * @return El número que ha escrito el usuario.
 	 */
 	public static int pedirNumero() {
 		int cantidad = -1;
@@ -344,10 +341,10 @@ public class Main {
 	}
 
 	/**
-	 * Gestiona la inserción de cantidades de munición para acciones ofensivas o defensivas,
-	 * limitando la elección a la reserva actual del jugador y forzando un gasto mínimo lógico.
-	 * @param maximoDisponible Cantidad máxima de misiles que el jugador posee sin gastar.
-	 * @return La cantidad final de misiles aprobada para ejecutar la acción.
+	 * Te pregunta cuántos misiles quieres usar y vigila que no intentes gastar 
+	 * más de los que tienes o menos de 1.
+	 * * @param maximoDisponible El tope de misiles que puedes gastar en este turno.
+	 * @return Los misiles que finalmente vas a usar.
 	 */
 	public static int pedirMisilesValidos(int maximoDisponible) {
 		int cantidad;
@@ -363,10 +360,10 @@ public class Main {
 	}
 
 	/**
-	 * Despliega en consola un resumen de la vitalidad y tipología de todos los equipos 
-	 * que conforman la partida, aplicando máscaras estéticas para facilitar su lectura.
-	 * @param equipos     Estructura de datos con todos los planetas de la sesión activa.
-	 * @param tipoPartida Permite a la función discernir si debe anunciar ventajas de clase (Modo Normal).
+	 * Muestra en pantalla la vida que le queda a cada equipo. Si es el modo de juego
+	 * "Normal", también te avisa de qué tipo de planeta es cada uno (Rojo, Azul, etc.).
+	 * * @param equipos     La lista con todos los planetas de la partida.
+	 * @param tipoPartida Sirve para saber si estamos en el modo "Normal" y mostrar los tipos.
 	 */
 	public static void imprimirEstadoEquipos(ArrayList<Planeta> equipos, int tipoPartida) {
 		for (Planeta p : equipos) {
@@ -386,14 +383,14 @@ public class Main {
 	}
 
 	/**
-	 * Construye el menú contextual de objetivos disponibles en el turno activo, filtrando bajas
-	 * y almacenando internamente las referencias precisas para ejecutar ataques posteriores.
-	 * @param atacante         Entidad que ostenta la titularidad del turno actual.
-	 * @param equipos          Totalidad de los participantes registrados.
-	 * @param objetivos        Matriz temporal destinada a relacionar las opciones numéricas con las entidades reales.
-	 * @param ronda            Indicador cronológico que permite inhabilitar la defensa en etapas prematuras.
-	 * @param vidaInicialRonda Registro de salud para discriminar blancos válidos caídos previamente en la ronda.
-	 * @return Un entero con la cifra máxima de opciones de ataque catalogadas.
+	 * Muestra a quién puedes atacar en tu turno (solo a los que siguen vivos) y 
+	 * te da la opción de curarte si no estás en la primera ronda.
+	 * * @param atacante         El planeta al que le toca jugar ahora.
+	 * @param equipos          Todos los equipos de la partida.
+	 * @param objetivos        Un array que usamos para saber a qué enemigo corresponde cada número del menú.
+	 * @param ronda            La ronda actual (para saber si bloquear la opción de defenderse).
+	 * @param vidaInicialRonda Las vidas al empezar la ronda, para no dejarte atacar a alguien que acaba de morir.
+	 * @return El número máximo de opciones que hay en el menú para atacar.
 	 */
 	public static int mostrarObjetivos(Planeta atacante, ArrayList<Planeta> equipos, Planeta[] objetivos, int ronda,
 			int[] vidaInicialRonda) {
@@ -421,10 +418,10 @@ public class Main {
 	}
 
 	/**
-	 * Vuelca el registro narrativo acumulado por todos los equipos y eventos del juego
-	 * estructurándolo bajo una cabecera para presentar los resultados tácticos de la ronda.
-	 * @param eventos Texto consolidado con todas las crónicas militares acontecidas.
-	 * @param ronda   Etapa cronológica a la que pertenecen dichos registros.
+	 * Imprime un bloque de texto bonito con todo lo que ha pasado durante la ronda 
+	 * (los ataques, curaciones, muertes...).
+	 * * @param eventos Todo el texto con lo que ha pasado.
+	 * @param ronda   El número de la ronda que acaba de terminar.
 	 */
 	public static void imprimirRegistro(String eventos, int ronda) {
 		System.out.println("\n==================================");
@@ -435,9 +432,9 @@ public class Main {
 	}
 
 	/**
-	 * Evalúa el número de supervivientes activos en el panorama general de la partida.
-	 * @param equipos Estructura de datos completa de entidades a revisar.
-	 * @return La suma cuantitativa de todos los elementos cuyo valor vital supera el umbral del cero.
+	 * Cuenta cuántos equipos siguen con vida (con vida mayor que cero).
+	 * * @param equipos La lista de todos los planetas.
+	 * @return El número de supervivientes.
 	 */
 	public static int contarVivos(ArrayList<Planeta> equipos) {
 		int vivos = 0;
@@ -450,10 +447,10 @@ public class Main {
 	}
 
 	/**
-	 * Analiza el estado final de la partida para identificar al vencedor absoluto, procesa
-	 * el resultado hacia la base de datos histórica persistente y devuelve la confirmación.
-	 * @param equipos Lista con el estado de salud terminal de los participantes.
-	 * @return Cadena de texto correspondiente a la entidad victoriosa o el indicador estándar de empate.
+	 * Busca qué equipo ha ganado (el último que queda vivo), guarda su nombre 
+	 * en un archivo de texto llamado ganadores_coldwar.txt y te dice quién es.
+	 * * @param equipos La lista de equipos cuando la partida ya ha acabado.
+	 * @return El nombre del ganador o "Nadie" si ha habido un empate raro.
 	 */
 	public static String obtenerGanador(ArrayList<Planeta> equipos) {
 		//EN caso de no haber ganador como no modificaremos el string lo inicializamos con la palabra "Nadie"
@@ -486,14 +483,13 @@ public class Main {
 	}
 
 	/**
-	 * Organiza la configuración automática de participantes, recabando primero al jugador líder y
-	 * complementando el cupo solicitado extrayendo entidades pseudoaleatorias del catálogo provisto.
-	 * @param equipos          Lista matriz que será poblada durante el proceso de generación.
-	 * @param numEquipos       Cupo total objetivo necesario para inicializar el combate.
-	 * @param vidaPers         Estadística de vitalidad base que unificará a todas las entidades.
-	 * @param misilesIniciales Reserva logística armamentística aplicable a todos los agentes creados.
+	 * Crea tu equipo para la partida y rellena los huecos que faltan con bots. 
+	 * A los bots les pone nombres aleatorios de una lista bastante graciosa.
+	 * * @param equipos          La lista vacía donde vamos a meter a los jugadores.
+	 * @param numEquipos       Cuántos equipos quieres que haya en total en la partida.
+	 * @param vidaPers         La vida inicial que tendrán todos.
+	 * @param misilesIniciales Los misiles iniciales de todos los equipos.
 	 */
-		
 	public static void generarBots(ArrayList<Planeta> equipos, int numEquipos, int vidaPers, int misilesIniciales) {
 		ArrayList<String> nomAleatorio = new ArrayList<>(Arrays.asList("Croquetofilia.", "Pancetamania.",
 				"Gazpachobiónico.", "Albondigazo.", "Macarronninja.", "Chistorrapower.", "Garbanzostyle.",
@@ -552,24 +548,24 @@ public class Main {
 	}
 
 	/**
-	 * Produce un valor numérico entero acotado por un margen inferior y superior dinámicos,
-	 * facilitando su versatilidad paramétrica tanto para manipulación de índices como gasto logístico.
-	 * @param minimo Limite inferior inquebrantable que puede arrojar la ecuación.
-	 * @param maximo Límite superior del espectro aleatorio habilitado.
-	 * @return Entero encapsulado en la banda determinada, aplicando corrección distributiva por redondeo matemático.
+	 * Saca un número aleatorio que esté entre el mínimo y el máximo que le pases. 
+	 * Se usa para que los ataques de los bots sean impredecibles o para elegir nombres.
+	 * * @param minimo El número más pequeño que quieres que pueda salir.
+	 * @param maximo El número más grande que quieres que pueda salir.
+	 * @return Un número al azar entre esos dos.
 	 */
 	public static int numAleatorio(int minimo, int maximo) {
 		return (int) (Math.random() * (maximo - minimo + 1)) + minimo;
 	}
 	
 	/**
-	 * Motor de decisiones simuladas. Gobierna la secuencia de un turno automatizado estructurando 
-	 * de forma probabilística la elección del objetivo táctico y el racionamiento de recursos de fuego.
-	 * @param equipos          Contexto global de entidades para el mapeo de blancos.
-	 * @param vidaInicialRonda Registro temporal para discriminar a las unidades caídas en fases muy recientes.
-	 * @param ronda            Marcador cronológico implicado en validaciones de defensa.
-	 * @param atacante         Agente robótico actualmente sujeto a proceso de resolución.
-	 * @return Un registro crudo encapsulado de todos los comandos de combate generados que será devuelto al controlador principal.
+	 * Hace que los bots jueguen solos. Eligen a lo loco a qué enemigo atacar 
+	 * (o si se curan) y también cuántos misiles gastar en su turno.
+	 * * @param equipos          Todos los equipos de la partida para saber a quién apuntar.
+	 * @param vidaInicialRonda Para que el bot no ataque a alguien que ya murió en este mismo turno.
+	 * @param ronda            La ronda actual (para que no se curen en la primera).
+	 * @param atacante         El planeta bot que está jugando ahora mismo.
+	 * @return Un texto (String) con todo lo que ha hecho el bot en su turno para mostrarlo luego.
 	 */
 	public static String atacarBots(ArrayList<Planeta> equipos, int[] vidaInicialRonda, int ronda, Planeta atacante) {
 		String logBot = "";
@@ -601,8 +597,8 @@ public class Main {
 	}
 
 	/**
-	 * Examina el almacenamiento persistente configurado en el sistema anfitrión y
-	 * expone el contenido descifrado al usuario estructurándolo como un ranking jerárquico.
+	 * Lee el archivo de texto donde guardamos los ganadores (ganadores_coldwar.txt)
+	 * y los muestra por pantalla como si fuera un Salón de la Fama.
 	 */
 	public static void mostrarGanadores() {
 		System.out.println("\n\t\t=================================");
