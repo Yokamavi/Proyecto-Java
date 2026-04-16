@@ -150,6 +150,10 @@ public class Main {
 						System.out.println("❌ El nombre no puede estar vacío.");
 						nombreValido = false;
 						continue;
+					} else if (nombre.endsWith(".")) {
+						System.out.println("❌ El nombre no puede terminar en punto.");
+						nombreValido = false;
+						continue;
 					}
 					// Verificamos que el nombre introducido no esté ya en uso por otro jugador 
 					// en la lista actual para evitar conflictos de identificación.
@@ -489,8 +493,8 @@ public class Main {
 	 * @param vidaPers         Estadística de vitalidad base que unificará a todas las entidades.
 	 * @param misilesIniciales Reserva logística armamentística aplicable a todos los agentes creados.
 	 */
-	public static void generarBots(ArrayList<Planeta> equipos, int numEquipos, int vidaPers, int misilesIniciales) {
 		
+	public static void generarBots(ArrayList<Planeta> equipos, int numEquipos, int vidaPers, int misilesIniciales) {
 		ArrayList<String> nomAleatorio = new ArrayList<>(Arrays.asList("Croquetofilia.", "Pancetamania.",
 				"Gazpachobiónico.", "Albondigazo.", "Macarronninja.", "Chistorrapower.", "Garbanzostyle.",
 				"Churrogaláctico.", "Mortadelatrón.", "Salmorejofit.", "Aceitunafuturista.", "Pimentonero.",
@@ -524,7 +528,7 @@ public class Main {
 				nombreValido = false;
 				continue;
 			} else if (nombre.endsWith(".")) {
-				System.out.println("❌ El nombre no puede terminar en punto (eso es para los bots).");
+				System.out.println("❌ El nombre no puede terminar en punto.");
 				nombreValido = false;
 				continue;
 			}
