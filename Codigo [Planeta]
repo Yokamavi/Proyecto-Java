@@ -1,8 +1,7 @@
 /**
- * Clase que representa un planeta (o equipo) dentro del juego Coldwar. Gestiona
- * los atributos vitales, el tipo de planeta y la lógica interna de combate,
- * incluyendo curaciones, cálculo de daño por ventajas de tipo y probabilidades
- * de evasión. 
+ * Clase que hace de "ficha de personaje" para los planetas o equipos del juego. 
+ * Aquí se guarda cuánta vida tienen, cuántos misiles les quedan y cómo funcionan 
+ * sus habilidades (si hacen el doble de daño, si esquivan, o si deciden curarse).
  * @author Aarón Martíns Vilas
  * @author Víctor Mosquera Puchades
  * @author Liliana Ortega Arteaga
@@ -22,10 +21,10 @@ public class Planeta {
 	private int tipo;
 
 	/**
-	 * Constructor principal para inicializar un planeta basándose en su tipo.
-	 * Configura la vida máxima y los misiles por ronda dependiendo de si es un
-	 * planeta estándar, de tipo tanque (5) o evasivo/enano (6).
-	 * @param tipo El identificador numérico del tipo de planeta (ej: 5 para Tanque, 6 para Enano).
+	 * Prepara a un planeta nada más empezar a jugar según el tipo que hayas elegido. 
+	 * Si es el tipo Gigante (5), le pone el doble de vida pero empieza con pocos misiles. 
+	 * Si es el Enano (6), le pone la mitad de vida. Los demás empiezan normal.
+	 * @param tipo El número del 1 al 6 que dice qué clase de planeta es.
 	 */
 	public Planeta(int tipo) {
 		this.tipo = tipo;
@@ -44,10 +43,10 @@ public class Planeta {
 	}
 
 	/**
-	 * Constructor secundario para inicializar un planeta con valores personalizados
-	 * de vida y misiles. Asigna por defecto el tipo 1 (estándar).
-	 * @param vidaPers    La cantidad de vida inicial y máxima personalizada.
-	 * @param misilesPers La cantidad de misiles disponibles por ronda personalizada.
+	 * Prepara un planeta pero a tu gusto, dejándote elegir la vida y los misiles 
+	 * iniciales (ideal para partidas personalizadas o con bots). Por defecto será un planeta Normal (tipo 1).
+	 * @param vidaPers    La vida máxima y inicial que le quieres poner.
+	 * @param misilesPers Los misiles que tendrá en el primer turno.
 	 */
 	public Planeta(int vidaPers, int misilesPers) {
 		this.tipo = 1; 
@@ -59,72 +58,71 @@ public class Planeta {
 	// Getters y Setters
 
 	/**
-	 * Obtiene la vida actual del planeta.
-	 * @return Los puntos de vida actuales.
+	 * Te chiva cuánta vida le queda al planeta ahora mismo.
+	 * @return La vida actual.
 	 */
 	public int getVidas() { return vidas; }
 
 	/**
-	 * Establece la vida actual del planeta.
-	 * @param vidas La nueva cantidad de puntos de vida.
+	 * Cambia la vida actual del planeta por el número que le pases.
+	 * @param vidas La nueva cantidad de vida.
 	 */
 	public void setVidas(int vidas) { this.vidas = vidas; }
 
 	/**
-	 * Obtiene el nombre del planeta o equipo.
-	 * @return El nombre actual del planeta.
+	 * Te dice cómo se llama este equipo o planeta.
+	 * @return El nombre del planeta.
 	 */
 	public String getNombre() { return nombre; }
 
 	/**
-	 * Establece el nombre del planeta o equipo.
-	 * @param nombre El nombre a asignar al planeta.
+	 * Le pone el nombre que tú quieras al planeta.
+	 * @param nombre El texto con el nombre.
 	 */
 	public void setNombre(String nombre) { this.nombre = nombre; }
 
 	/**
-	 * Obtiene la cantidad de misiles disponibles para la ronda actual.
-	 * @return El número de misiles disponibles.
+	 * Te dice cuántos misiles tiene listos para disparar (o curarse) en este turno.
+	 * @return Los misiles que le sobran.
 	 */
 	public int getMisiles_ronda() { return misilesRonda; }
 
 	/**
-	 * Establece la cantidad de misiles disponibles para la ronda.
-	 * @param misiles_ronda La cantidad de misiles a establecer.
+	 * Actualiza los misiles que tiene el planeta en la recámara.
+	 * @param misiles_ronda El nuevo número de misiles.
 	 */
 	public void setMisiles_ronda(int misiles_ronda) { this.misilesRonda = misiles_ronda; }
 
 	/**
-	 * Obtiene el número de equipos (si aplica a la lógica externa).
+	 * Te dice cuántos equipos hay en total (si lo necesitas para alguna lógica extra).
 	 * @return El número de equipos.
 	 */
 	public int getNumEquipos() { return numEquipos; }
 
 	/**
-	 * Establece el número de equipos.
-	 * @param numEquipos El número de equipos a establecer.
+	 * Guarda cuántos equipos están participando en la partida.
+	 * @param numEquipos El total de equipos.
 	 */
 	public void setNumEquipos(int numEquipos) { this.numEquipos = numEquipos; }
 
 	/**
-	 * Obtiene el tipo numérico del planeta.
-	 * @return El identificador del tipo de planeta.
+	 * Te devuelve el número que identifica qué clase de planeta es (Rojo, Azul, Gigante...).
+	 * @return Un número del 1 al 6.
 	 */
 	public int getTipo() { return tipo; }
 
 	/**
-	 * Establece el tipo numérico del planeta.
-	 * @param tipo El nuevo identificador de tipo.
+	 * Cambia la clase de planeta que es.
+	 * @param tipo El nuevo número de tipo (del 1 al 6).
 	 */
 	public void setTipo(int tipo) { this.tipo = tipo; }
 
 	/**
-	 * Calcula la cantidad de misiles que el planeta recibe en un turno específico.
-	 * Implementa una lógica especial para el tipo 5, donde la cantidad de misiles
-	 * escala progresivamente con el número de ronda.
-	 * @param baseMisiles La cantidad base de misiles que se otorgan normalmente.
-	 * @param ronda       El número de la ronda actual.
-	 * @return La cantidad de misiles calculada para este turno.
+	 * Calcula cuántos misiles te tocan en este turno. Si eres un planeta Gigante (tipo 5), 
+	 * cada ronda que pasa te dan más misiles para compensar que empiezas con poquitos.
+	 * @param baseMisiles Los misiles que se reparten normalmente a todo el mundo.
+	 * @param ronda       La ronda en la que estamos.
+	 * @return Los misiles que finalmente puedes usar en este turno.
 	 */
 	public int calcularMisilesTurno(int baseMisiles, int ronda) {
 		if (this.tipo == 5) {
@@ -134,11 +132,10 @@ public class Planeta {
 	}
 
 	/**
-	 * Ejecuta la acción de curación (o defensa) del planeta.
-	 * Consume una cantidad de misiles y regenera vida equivalente a la mitad
-	 * de los misiles gastados. Evita superar la vida máxima permitida.
-	 * @param cantidad La cantidad de misiles que se desean gastar en defensa/curación.
-	 * @return Una cadena de texto (log) describiendo la acción realizada y la vida recuperada.
+	 * Gasta tus misiles para curarte en vez de atacar. Por cada 2 misiles que gastes, 
+	 * recuperas 1 punto de vida. Además, el método vigila que no te cures por encima de tu tope de vida.
+	 * @param cantidad Los misiles que vas a sacrificar para curarte.
+	 * @return Un texto contando qué ha pasado para mostrarlo luego en el registro de la ronda.
 	 */
 	public String curar(int cantidad) {
 		String atacante = this.nombre.replace('.', ' ');
@@ -159,19 +156,18 @@ public class Planeta {
 	}
 
 	/**
-	 * Ejecuta un ataque hacia otro planeta. Calcula la cantidad de misiles que impactan,
-	 * aplicando probabilidades de esquiva si el objetivo es tipo 6. Luego calcula el
-	 * daño final basándose en el sistema de debilidades y resistencias (Piedra, Papel, Tijera).
-	 * Finalmente, resta el daño al planeta objetivo y descuenta los misiles al atacante.
-	 * @param misilesLanzados La cantidad de misiles que el atacante dispara.
-	 * @param atacado         El objeto {@link Planeta} que recibe el ataque.
-	 * @return Una cadena de texto (log) detallando el resultado del combate, los impactos, esquivas y eficacia.
+	 * Aquí pasa la magia de los ataques. Primero tira los dados por si el enemigo es Enano 
+	 * y esquiva los misiles. Luego mira si hay ventajas de tipo (estilo Pokémon: Rojo gana a Verde, etc.) 
+	 * para hacer el doble o la mitad de daño, y finalmente le resta la vida al enemigo.
+	 * @param misilesLanzados Todos los misiles que le has tirado al rival.
+	 * @param atacado         El planeta pobrecito que se está comiendo el ataque.
+	 * @return Un texto contando el salseo: cuántos impactaron, si hubo esquivas y si el ataque fue súper eficaz.
 	 */
 	public String combate(int misilesLanzados, Planeta atacado) {
 		int misilesImpactados = 0;
 		int misilesEsquivados = 0;
 
-		// Simulación de esquiva
+		// Simulación de esquiva (el Enano tiene un 50% de probabilidad de esquivar cada misil)
 		if (atacado.getTipo() == 6) {
 			for (int i = 0; i < misilesLanzados; i++) {
 				if (Math.random() >= 0.5) {
@@ -184,23 +180,23 @@ public class Planeta {
 			misilesImpactados = misilesLanzados;
 		}
 
-		// Cálculo de ventajas y desventajas
+		// Cálculo de ventajas y desventajas (Piedra, Papel, Tijera)
 		double multiplicador = 1.0;
 		if (this.tipo == 2) { // Rojo
-			if (atacado.getTipo() == 4) multiplicador = 2.0;
-			if (atacado.getTipo() == 3) multiplicador = 0.5;
+			if (atacado.getTipo() == 4) multiplicador = 2.0; // Rojo machaca a Verde
+			if (atacado.getTipo() == 3) multiplicador = 0.5; // Rojo sufre contra Azul
 		} else if (this.tipo == 3) { // Azul
-			if (atacado.getTipo() == 2) multiplicador = 2.0;
-			if (atacado.getTipo() == 4) multiplicador = 0.5;
+			if (atacado.getTipo() == 2) multiplicador = 2.0; // Azul machaca a Rojo
+			if (atacado.getTipo() == 4) multiplicador = 0.5; // Azul sufre contra Verde
 		} else if (this.tipo == 4) { // Verde
-			if (atacado.getTipo() == 3) multiplicador = 2.0;
-			if (atacado.getTipo() == 2) multiplicador = 0.5;
+			if (atacado.getTipo() == 3) multiplicador = 2.0; // Verde machaca a Azul
+			if (atacado.getTipo() == 2) multiplicador = 0.5; // Verde sufre contra Rojo
 		}
 		
-		//Aplicamos el daño
+		// Aplicamos el daño final al pobrecito atacado
 		int danioFinal = (int) (misilesImpactados * multiplicador);
 		atacado.vidas -= danioFinal;
-		this.misilesRonda -= misilesLanzados;
+		this.misilesRonda -= misilesLanzados; // Gastamos nuestros misiles
 
 		String evento = "🚀 [" + nombre.replace('.', ' ') + "] lanzó " + misilesLanzados + " misiles a [" + atacado.getNombre().replace('.', ' ') + "]. ";
 
