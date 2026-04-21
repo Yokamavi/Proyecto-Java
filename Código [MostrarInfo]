@@ -83,4 +83,12 @@ public class MostrarInfo {
 		System.out.println("6. Planeta Enano (Mitad vida, 50% de esquivar misiles)");
 
     }
+    
+    public static void mostrarRegistro (int ronda, String eventos) {
+		System.out.println("\n==================================");
+		System.out.println("   REGISTRO DE LA RONDA " + ronda);
+		System.out.println("==================================");
+		System.out.print(eventos); 
+		System.out.println("==================================\n");
+    }
 }
