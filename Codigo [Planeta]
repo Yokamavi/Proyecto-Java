@@ -28,10 +28,7 @@ public class Planeta {
 	 */
 	public Planeta(int tipo) {
 		this.tipo = tipo;
-		this.vidaMaxima = 200;
-		this.vidas = 200;
-		this.misilesRonda = 50;
-
+		
 		if (this.tipo == 5) {
 			this.vidaMaxima = 400;
 			this.vidas = 400;
@@ -39,6 +36,10 @@ public class Planeta {
 		} else if (this.tipo == 6) {
 			this.vidaMaxima = 100;
 			this.vidas = 100;
+		} else {
+			this.vidaMaxima = 200;
+			this.vidas = 200;
+			this.misilesRonda = 50;
 		}
 	}
 
@@ -124,11 +125,11 @@ public class Planeta {
 	 * @param ronda       La ronda en la que estamos.
 	 * @return Los misiles que finalmente puedes usar en este turno.
 	 */
-	public int calcularMisilesTurno(int baseMisiles, int ronda) {
+	public int calcularMisilesTurno(int misiles, int ronda) {
 		if (this.tipo == 5) {
 			return 10 + (10 * (ronda - 1));
 		}
-		return baseMisiles;
+		return misiles;
 	}
 
 	/**
@@ -138,11 +139,9 @@ public class Planeta {
 	 * @return Un texto contando qué ha pasado para mostrarlo luego en el registro de la ronda.
 	 */
 	public String curar(int cantidad) {
-		String atacante = this.nombre.replace('.', ' ');
-		int curacion = cantidad / 2;
-		
+		String atacante = this.nombre.replace('.', ' ');		
 		// Sumamos la curación
-		this.vidas += curacion;
+		this.vidas += cantidad / 2;
 		
 		// Evitamos que la vida actual supere el límite de vida máxima del planeta
 		if (this.vidas > this.vidaMaxima) {
@@ -152,7 +151,7 @@ public class Planeta {
 		// El planeta se resta a sí mismo los misiles gastados
 		this.misilesRonda -= cantidad;
 
-		return "🛡️ [" + atacante + "] gastó " + cantidad + " misiles en defensa (+ " + curacion + " HP al final).\n";
+		return "🛡️ [" + atacante + "] gastó " + cantidad + " misiles en defensa (+ " + cantidad / 2 + " HP al final).\n";
 	}
 
 	/**
@@ -165,15 +164,13 @@ public class Planeta {
 	 */
 	public String combate(int misilesLanzados, Planeta atacado) {
 		int misilesImpactados = 0;
-		int misilesEsquivados = 0;
+		String evento = "";
 
 		// Simulación de esquiva (el Enano tiene un 50% de probabilidad de esquivar cada misil)
 		if (atacado.getTipo() == 6) {
 			for (int i = 0; i < misilesLanzados; i++) {
 				if (Math.random() >= 0.5) {
 					misilesImpactados++; 
-				} else {
-					misilesEsquivados++; 
 				}
 			}
 		} else {
@@ -198,10 +195,10 @@ public class Planeta {
 		atacado.vidas -= danioFinal;
 		this.misilesRonda -= misilesLanzados; // Gastamos nuestros misiles
 
-		String evento = "🚀 [" + nombre.replace('.', ' ') + "] lanzó " + misilesLanzados + " misiles a [" + atacado.getNombre().replace('.', ' ') + "]. ";
+		evento = "🚀 [" + nombre.replace('.', ' ') + "] lanzó " + misilesLanzados + " misiles a [" + atacado.getNombre().replace('.', ' ') + "]. ";
 
 		if (atacado.getTipo() == 6) {
-			evento += "💨 El Enano esquivó " + misilesEsquivados + " misiles. ";
+			evento += "💨 El Enano esquivó " + (misilesLanzados-misilesImpactados) + " misiles. ";
 		}
 
 		if (multiplicador == 2.0) {
